@@ -1,17 +1,116 @@
 <!doctype html>
-<html>
-<head><link rel="stylesheet" href="/index.css">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Library & Archive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/index.css">
 </head>
-<body>
-<script type="importmap">
-  {
-    "imports": {
-      "@google/genai": "https://esm.sh/@google/genai@^0.8.0",
-      "marked": "https://esm.sh/marked@^15.0.8"
-    }
-  }
-</script>
+<body class="antialiased min-h-screen flex flex-col">
 
-<script type="module" src="/index.ts"></script>
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-md">
+                    <i class="fas fa-archive"></i>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900">Digital Library & Archive</h1>
+            </div>
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-lock mr-1"></i> Secure Internal Access
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Search and AI Bar -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-8 flex flex-col gap-4">
+            <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
+                <div class="relative w-full sm:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search archives...">
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button id="filter-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-filter text-gray-400"></i> Filter
+                    </button>
+                    <button id="ai-ask-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                        <i class="fas fa-robot"></i> Ask Librarian
+                    </button>
+                </div>
+            </div>
+            <div id="ai-response-container" class="hidden p-4 bg-blue-50 rounded-md border border-blue-100 text-sm text-blue-800">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-info-circle mt-1 text-blue-500"></i>
+                    <div id="ai-response-text" class="prose prose-sm max-w-none"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button id="btn-documents" class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <i class="fas fa-file-pdf mr-2"></i> Manuscripts & Texts
+                </button>
+                <button id="btn-media" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <i class="fas fa-images mr-2"></i> Media & Assets
+                </button>
+                <button id="btn-data" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    <i class="fas fa-database mr-2"></i> Social Data Archives
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content: Documents -->
+        <div id="tab-documents" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="documents-grid">
+                <!-- Cards will be injected by index.ts -->
+            </div>
+        </div>
+
+        <!-- Tab Content: Media -->
+        <div id="tab-media" class="tab-content">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="media-grid">
+                <!-- Cards will be injected by index.ts -->
+            </div>
+        </div>
+
+        <!-- Tab Content: Data -->
+        <div id="tab-data" class="tab-content">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Logged</th>
+                            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Action</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Rows will be injected by index.ts -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.sh/@google/genai@^0.8.0",
+          "marked": "https://esm.sh/marked@^15.0.8"
+        }
+      }
+    </script>
+    <script type="module" src="/index.ts"></script>
 </body>
 </html>
