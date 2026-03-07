@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6;
-    color: #1f2937;
+:root {
+  --bg-color: #08090d;
+  --panel-bg: #12141c;
+  --titanium-silver: #c0c5ce;
+  --gold-accent: #d4af37;
+  --text-main: #e2e8f0;
+  --text-muted: #8b96a5;
+  --glow: 0 0 20px rgba(212, 175, 55, 0.15);
 }
 
 .archive-card {
@@ -18,8 +22,8 @@ body {
 }
 
 .tab-btn.active {
-    border-bottom: 2px solid #3b82f6;
-    color: #3b82f6;
+    border-bottom: 2px solid #6366f1;
+    color: #6366f1;
     font-weight: 600;
 }
 
@@ -35,6 +39,13 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+.view-section {
+    display: none;
+}
+.view-section.active {
+    display: block;
 }
 
 pre {

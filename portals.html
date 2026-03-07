@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanium Ascendant | Secure Portals</title>
+    <style>
+        :root {
+            --bg-color: #08090d; --panel-bg: #12141c;
+            --titanium-silver: #c0c5ce; --gold-accent: #d4af37;
+            --text-main: #e2e8f0;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); padding: 4rem 2rem; }
+        .form-container { max-width: 600px; margin: 0 auto 3rem; background: var(--panel-bg); padding: 2rem; border-top: 3px solid var(--gold-accent); border-radius: 4px; }
+        h2 { color: var(--titanium-silver); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        label { display: block; margin-bottom: 0.5rem; color: var(--gold-accent); font-size: 0.85rem; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 0.8rem; margin-bottom: 1.5rem; background: #1a1d28; border: 1px solid #2a2e3d; color: white; }
+        button { background: transparent; color: var(--gold-accent); border: 1px solid var(--gold-accent); padding: 1rem 2rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; width: 100%; letter-spacing: 2px; }
+        button:hover { background: var(--gold-accent); color: var(--bg-color); font-weight: bold; }
+        .back-link { display: block; text-align: center; color: var(--text-muted); text-decoration: none; font-size: 0.8rem; margin-top: 2rem; text-transform: uppercase; letter-spacing: 1px; }
+        .back-link:hover { color: var(--gold-accent); }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Ministry: Volunteer Intake</h2>
+        <form id="volunteerForm">
+            <input type="hidden" id="entryType" value="volunteer_intake">
+            <label>Full Name</label> <input type="text" id="vName" required>
+            <label>Email Address</label> <input type="email" id="vEmail" required>
+            <label>Skills / Calling</label> <textarea id="vSkills" rows="3" required></textarea>
+            <button type="submit">Submit to Starchive</button>
+        </form>
+        <a href="/" class="back-link">Return to Master Directory</a>
+    </div>
+
+    <script>
+        // Securely routes form data to your Netlify serverless database function
+        document.getElementById('volunteerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                type: 'volunteer_intake',
+                data: {
+                    full_name: document.getElementById('vName').value,
+                    email_address: document.getElementById('vEmail').value,
+                    skills_offered: document.getElementById('vSkills').value
+                }
+            };
+            
+            try {
+                // Sends data to the get-post.js backend
+                const response = await fetch('/.netlify/functions/get-post', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if(response.ok) { 
+                    alert("Authorization Complete. Welcome to the Golden Age."); 
+                    e.target.reset(); 
+                } else {
+                    alert("Connection to Starchive failed. Please try again later.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error. Ensure your Netlify functions are deployed.");
+            }
+        });
+    </script>
+</body>
+</html>

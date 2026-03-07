@@ -1,113 +1,703 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Library & Archive</title>
+    <title>Titanium Ascendant Incorporation | Master Directory</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/index.css">
-</head>
-<body class="antialiased min-h-screen flex flex-col">
+    <style>
+        :root {
+            --bg-color: #08090d; /* Deep Space Black */
+            --panel-bg: #12141c;
+            --titanium-silver: #c0c5ce;
+            --gold-accent: #d4af37; /* Golden Age Hue */
+            --text-main: #e2e8f0;
+            --text-muted: #8b96a5;
+            --glow: 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
 
-    <!-- Header -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2 rounded-md">
-                    <i class="fas fa-archive"></i>
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        header.master-header {
+            text-align: center;
+            padding: 7rem 2rem 5rem;
+            background: radial-gradient(circle at top, #161925 0%, var(--bg-color) 70%);
+            border-bottom: 1px solid rgba(192, 197, 206, 0.05);
+        }
+
+        h1.master-title {
+            font-size: 3.8rem;
+            font-weight: 300;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #8a939e, #ffffff, #8a939e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--gold-accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .grid-master {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .card-master {
+            background-color: var(--panel-bg);
+            border: 1px solid rgba(192, 197, 206, 0.08);
+            border-radius: 4px;
+            padding: 3rem 2.5rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card-master::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card-master:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--glow);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .card-master:hover::before {
+            opacity: 1;
+        }
+
+        .card-master h2 {
+            font-size: 1.6rem;
+            color: var(--titanium-silver);
+            margin-bottom: 1.2rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .card-master p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-master {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: transparent;
+            color: var(--gold-accent);
+            border: 1px solid var(--gold-accent);
+            border-radius: 2px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-master:hover {
+            background: var(--gold-accent);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+
+        .starchive-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--gold-accent);
+            padding: 0.4rem 1rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        footer.master-footer {
+            text-align: center;
+            padding: 4rem;
+            color: #5a6370;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(192, 197, 206, 0.05);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Starchive Specific Overrides */
+        .starchive-view {
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Master Directory View -->
+    <div id="view-master" class="view-section active">
+        <header class="master-header">
+            <h1 class="master-title">Titanium Ascendant</h1>
+            <div class="subtitle">Global Operations Directory</div>
+        </header>
+
+        <div class="container">
+            <div class="grid-master">
+                
+                <div class="card-master" onclick="window.location.hash = 'ministry'">
+                    <h2>The Ministry</h2>
+                    <p>501(c)(3) Outreach & Pastoral Care. Distributing physical resources, food security, and profound spiritual healing to the Appalachian region and beyond.</p>
+                    <button class="btn-master">Enter Sanctuary</button>
                 </div>
-                <h1 class="text-xl font-bold text-gray-900">Digital Library & Archive</h1>
-            </div>
-            <div class="text-sm text-gray-500">
-                <i class="fas fa-lock mr-1"></i> Secure Internal Access
+
+                <div class="card-master" onclick="window.location.hash = 'studio'">
+                    <h2>The Studio</h2>
+                    <p>FCC-Registered Broadcasting (FRN: 0038034708). Commanding the global attention economy to broadcast the Golden Age movement to billions.</p>
+                    <button class="btn-master">Access Broadcast</button>
+                </div>
+
+                <div class="card-master" onclick="window.location.hash = 'starchive'">
+                    <div class="starchive-badge">Level 5 Clearance</div>
+                    <h2>The Starchive</h2>
+                    <p>Executive AI Management & Central Database. Secured repository for HR frameworks, UCC financial projections, grant blueprints, and internal routing.</p>
+                    <button class="btn-master">Initialize Override</button>
+                </div>
+
+                <div class="card-master" onclick="window.location.hash = 'onboarding'">
+                    <div class="starchive-badge">Executive Access</div>
+                    <h2>Board Onboarding</h2>
+                    <p>The First 48 Hours: Legal Activation & Systems Integration. Formalize authority for Mercury and Chase Private Client accounts.</p>
+                    <button class="btn-master">Begin Onboarding</button>
+                </div>
+
             </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        
-        <!-- Search and AI Bar -->
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-8 flex flex-col gap-4">
-            <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
-                <div class="relative w-full sm:w-96">
+        <footer class="master-footer">
+            <p>&copy; 2026 Titanium Ascendant Incorporation. All Rights Reserved. | Rev. Toby Ti Mustard, Chief Executive</p>
+        </footer>
+    </div>
+
+    <!-- Starchive View (Original Archive) -->
+    <div id="view-starchive" class="view-section starchive-view">
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.hash = ''" class="text-gray-400 hover:text-indigo-600 mr-2">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="bg-indigo-600 text-white p-2 rounded-md">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">Starchive <span class="text-indigo-600 font-normal text-sm ml-2">Titanium Ascendant</span></h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div id="sync-status" class="hidden sm:flex items-center gap-2 text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                        <i class="fas fa-cloud-upload-alt"></i> Cloud Synced
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-lock mr-1"></i> Secure Access
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Search and Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-8 items-center justify-between">
+                <div class="relative flex-1 w-full">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-search text-gray-400"></i>
                     </div>
                     <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search archives...">
                 </div>
                 <div class="flex gap-2 w-full sm:w-auto">
-                    <button id="filter-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                        <i class="fas fa-filter text-gray-400"></i> Filter
+                    <button id="generate-docs-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-indigo-300 rounded-md text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100">
+                        <i class="fas fa-file-export"></i> Generate Core Docs
                     </button>
-                    <button id="ai-ask-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                    <button id="sync-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-sync-alt text-gray-400"></i> Sync Cloud
+                    </button>
+                    <button id="ai-ask-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700">
                         <i class="fas fa-robot"></i> Ask Librarian
                     </button>
                 </div>
             </div>
-            <div id="ai-response-container" class="hidden p-4 bg-blue-50 rounded-md border border-blue-100 text-sm text-blue-800">
+
+            <div id="ai-response-container" class="hidden mb-8 p-4 bg-indigo-50 rounded-md border border-indigo-100 text-sm text-indigo-800">
                 <div class="flex items-start gap-3">
                     <i class="fas fa-info-circle mt-1 text-blue-500"></i>
                     <div id="ai-response-text" class="prose prose-sm max-w-none"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Navigation Tabs -->
-        <div class="border-b border-gray-200 mb-8">
-            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                <button id="btn-documents" class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                    <i class="fas fa-file-pdf mr-2"></i> Manuscripts & Texts
-                </button>
-                <button id="btn-media" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                    <i class="fas fa-images mr-2"></i> Media & Assets
-                </button>
-                <button id="btn-data" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                    <i class="fas fa-database mr-2"></i> Social Data Archives
-                </button>
-            </nav>
-        </div>
-
-        <!-- Tab Content: Documents -->
-        <div id="tab-documents" class="tab-content active">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="documents-grid">
-                <!-- Cards will be injected by index.ts -->
+            <!-- Tabs -->
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="flex -mb-px gap-8">
+                    <button id="btn-documents" class="tab-btn active border-b-2 border-indigo-500 py-4 px-1 text-sm font-medium text-indigo-600">
+                        Manuscripts & Texts
+                    </button>
+                    <button id="btn-media" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Media & Assets
+                    </button>
+                    <button id="btn-data" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Social Data Archives
+                    </button>
+                    <button id="btn-ministry-tab" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Ministry Operations
+                    </button>
+                    <button id="btn-banking" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Banking & Treasury
+                    </button>
+                    <button id="btn-payroll" class="tab-btn border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        Personnel & Payroll
+                    </button>
+                </nav>
             </div>
-        </div>
 
-        <!-- Tab Content: Media -->
-        <div id="tab-media" class="tab-content">
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="media-grid">
-                <!-- Cards will be injected by index.ts -->
+            <!-- Tab Contents -->
+            <div id="tab-documents" class="tab-content active">
+                <div id="documents-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards will be injected here -->
+                </div>
             </div>
-        </div>
 
-        <!-- Tab Content: Data -->
-        <div id="tab-data" class="tab-content">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Logged</th>
-                            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Action</span></th>
-                        </tr>
-                    </thead>
-                    <tbody id="data-table-body" class="bg-white divide-y divide-gray-200">
-                        <!-- Rows will be injected by index.ts -->
-                    </tbody>
-                </table>
+            <div id="tab-media" class="tab-content">
+                <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Media cards will be injected here -->
+                </div>
             </div>
-        </div>
 
-    </main>
+            <div id="tab-data" class="tab-content">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Archived</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Data rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-ministry-tab" class="tab-content">
+                <div class="bg-white p-6 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-lg font-bold">Ministry Operational Data</h3>
+                        <div class="text-right">
+                            <div class="text-xs font-bold text-emerald-600">10% Studio Tithe Active</div>
+                            <div class="text-[10px] text-gray-400">Auto-disbursement to Community Trust</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Active Volunteers</h4>
+                            <div id="ministry-volunteers-list" class="space-y-4">
+                                <!-- Volunteers will be injected here -->
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-100">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Tithing Channels</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-2 bg-white rounded border border-slate-200">
+                                    <span class="text-xs font-medium">Mercury (Digital)</span>
+                                    <span class="text-[10px] text-emerald-600 font-bold">CONNECTED</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-white rounded border border-slate-200">
+                                    <span class="text-xs font-medium">Chase (Legacy)</span>
+                                    <span class="text-[10px] text-amber-600 font-bold">VAULTED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-banking" class="tab-content">
+                <div class="bg-white p-6 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-bold mb-6">Tiered Banking Framework</h3>
+                    <p class="text-sm text-gray-600 mb-8">Strategic financial infrastructure for a $2.5M dual-nature operation.</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="p-5 border border-gray-100 rounded-lg bg-slate-50">
+                            <h4 class="font-bold text-indigo-600 mb-2">1. The Digital Engine: Mercury</h4>
+                            <p class="text-xs text-gray-500 mb-4">Best for Tech & Media (Studio Revenue)</p>
+                            <ul class="text-xs space-y-2 text-gray-700">
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Mercury Vault: $5M FDIC</li>
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Zero Fees (Global Wires)</li>
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Treasury: 4-5% APY</li>
+                            </ul>
+                        </div>
+                        <div class="p-5 border border-gray-100 rounded-lg bg-amber-50">
+                            <h4 class="font-bold text-amber-700 mb-2">2. The Legacy Anchor: Chase/PNC</h4>
+                            <p class="text-xs text-gray-500 mb-4">Best for Ministry & Local Outreach</p>
+                            <ul class="text-xs space-y-2 text-gray-700">
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Dedicated Relationship Manager</li>
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Physical Branch Access</li>
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Non-Profit Specialist Tiers</li>
+                            </ul>
+                        </div>
+                        <div class="p-5 border border-gray-100 rounded-lg bg-indigo-50">
+                            <h4 class="font-bold text-indigo-800 mb-2">3. The Agile Alternative: Relay FI</h4>
+                            <p class="text-xs text-gray-500 mb-4">Best for Multi-Fund Management</p>
+                            <ul class="text-xs space-y-2 text-gray-700">
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> 20 Individual Checking Accounts</li>
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Team-Based Permissions</li>
+                                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Collaborative Access</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 border border-gray-100 rounded-lg">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Feature</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Mercury (Digital)</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Chase Private (Personal)</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Relay (Operational)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 text-xs">
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-gray-900">Best For</td>
+                                    <td class="px-4 py-3">Global Media & Scale</td>
+                                    <td class="px-4 py-3">Executive Relationship</td>
+                                    <td class="px-4 py-3">Multi-Fund Management</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-gray-900">FDIC Coverage</td>
+                                    <td class="px-4 py-3">Up to $5M</td>
+                                    <td class="px-4 py-3">$250k (Standard)</td>
+                                    <td class="px-4 py-3">Up to $3M</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-gray-900">Personal Access</td>
+                                    <td class="px-4 py-3">Digital/AI-Driven</td>
+                                    <td class="px-4 py-3">Dedicated Human Manager</td>
+                                    <td class="px-4 py-3">Team-Based Controls</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-gray-900">Fee Structure</td>
+                                    <td class="px-4 py-3">$0</td>
+                                    <td class="px-4 py-3">Waived for high balance</td>
+                                    <td class="px-4 py-3">$0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-payroll" class="tab-content">
+                <div class="bg-white p-6 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold">Personnel & Automated Payroll</h3>
+                            <p class="text-xs text-gray-500">Titanium Payroll Logic: Ahead-of-Schedule Disbursement</p>
+                        </div>
+                        <button id="trigger-payroll-btn" class="px-4 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-900 transition">
+                            <i class="fas fa-bolt mr-2"></i> Trigger Payroll
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="p-4 border border-gray-100 rounded-lg bg-emerald-50">
+                            <h4 class="text-xs font-bold text-emerald-800 uppercase mb-2">Treasury Monitor</h4>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <div class="text-2xl font-bold text-emerald-900">$312,500.00</div>
+                                    <div class="text-[10px] text-emerald-600">Current Pipeline Balance</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-bold text-emerald-800">$300,000.00</div>
+                                    <div class="text-[10px] text-emerald-600">Payroll Threshold</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 w-full bg-emerald-200 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-emerald-600 h-full w-full"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded-lg bg-slate-50">
+                            <h4 class="text-xs font-bold text-slate-800 uppercase mb-2">Payroll Status</h4>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-slate-900">Ready for Disbursement</div>
+                                    <div class="text-[10px] text-slate-500">All personnel verified via Stripe Connect</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Personnel</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Payment</th>
+                                </tr>
+                            </thead>
+                            <tbody id="personnel-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Personnel rows will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Onboarding View -->
+    <div id="view-onboarding" class="view-section starchive-view">
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.hash = ''" class="text-gray-400 hover:text-indigo-600 mr-2">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="bg-slate-800 text-white p-2 rounded-md">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">Board Onboarding <span class="text-slate-800 font-normal text-sm ml-2">The First 48 Hours</span></h1>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="space-y-8">
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 flex items-center justify-center pt-8 pl-8">
+                        <span class="text-slate-200 text-4xl font-bold">01</span>
+                    </div>
+                    <h2 class="text-xl font-bold mb-4 text-slate-900">Hour 0-12: Legal Activation</h2>
+                    <p class="text-sm text-gray-600 mb-6">CEO sends the Digital Signature Link containing the Board Member Agreement, NDA, and Corporate Banking Resolution.</p>
+                    <div class="flex gap-3">
+                        <button class="px-4 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-900 transition">Send Signature Link</button>
+                        <button class="px-4 py-2 border border-slate-200 text-slate-600 rounded text-xs font-bold hover:bg-slate-50 transition">Preview Documents</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 flex items-center justify-center pt-8 pl-8">
+                        <span class="text-slate-200 text-4xl font-bold">02</span>
+                    </div>
+                    <h2 class="text-xl font-bold mb-4 text-slate-900">Hour 12-24: Systems Integration</h2>
+                    <p class="text-sm text-gray-600 mb-6">Directors are granted "Read-Only" access to the Master Directory OS and the Titanium Starchive.</p>
+                    <div class="p-4 bg-slate-50 rounded border border-slate-100 mb-6">
+                        <div class="flex items-center gap-3 text-xs font-bold text-slate-800 mb-2">
+                            <i class="fas fa-key"></i> Access Credentials
+                        </div>
+                        <div class="text-[10px] text-slate-500 font-mono">STARCHIVE_ROOT_ACCESS: READ_ONLY_DIRECTOR_V1</div>
+                    </div>
+                    <button class="px-4 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-900 transition">Provision Access</button>
+                </div>
+
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 flex items-center justify-center pt-8 pl-8">
+                        <span class="text-slate-200 text-4xl font-bold">03</span>
+                    </div>
+                    <h2 class="text-xl font-bold mb-4 text-slate-900">Hour 24-48: Strategic Alignment</h2>
+                    <p class="text-sm text-gray-600 mb-6">First Executive Briefing. Finalizing 501(c)(3) Form 1023 and approving Senior Grant Writer job description.</p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center gap-3 text-xs text-gray-700">
+                            <i class="fas fa-calendar-alt text-slate-400"></i> Scheduled: March 9, 2026 - 10:00 AM EST
+                        </div>
+                        <div class="flex items-center gap-3 text-xs text-gray-700">
+                            <i class="fas fa-video text-slate-400"></i> Secure Link: titanium.ascendant/briefing/001
+                        </div>
+                    </div>
+                    <button class="px-4 py-2 bg-slate-800 text-white rounded text-xs font-bold hover:bg-slate-900 transition">Join Briefing Room</button>
+                </div>
+            </div>
+        </main>
+    </div>
+        </main>
+    </div>
+
+    <!-- Ministry View -->
+    <div id="view-ministry" class="view-section starchive-view">
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.hash = ''" class="text-gray-400 hover:text-indigo-600 mr-2">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="bg-amber-600 text-white p-2 rounded-md">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">The Ministry <span class="text-amber-600 font-normal text-sm ml-2">Titanium Ascendant</span></h1>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-2xl font-bold mb-6">Volunteer Intake & Outreach</h2>
+                <p class="text-gray-600 mb-8">Distributing physical resources, food security, and profound spiritual healing to the Appalachian region and beyond.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-lg">Active Initiatives</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2 text-sm text-gray-700"><i class="fas fa-check text-emerald-500"></i> Food Security Program - Pike County</li>
+                            <li class="flex items-center gap-2 text-sm text-gray-700"><i class="fas fa-check text-emerald-500"></i> Pastoral Telehealth Anchor</li>
+                            <li class="flex items-center gap-2 text-sm text-gray-700"><i class="fas fa-check text-emerald-500"></i> Community Healing Center - Waverly</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-md border border-gray-100">
+                        <h3 class="font-semibold mb-4">Volunteer Registry</h3>
+                        <p class="text-xs text-gray-500 italic mb-4">Pillar 1: Secure Charitable Data</p>
+                        <a href="/portals.html" class="block w-full py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition text-center no-underline mb-4">Register New Volunteer</a>
+                        
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Active Volunteers</h4>
+                        <div id="ministry-view-volunteers" class="space-y-2">
+                            <!-- Volunteers list for Ministry view -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200 mt-8">
+                <h2 class="text-2xl font-bold mb-6">Tithing & Global Impact</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <p class="text-gray-600 mb-6">Your contributions fuel the Titanium engine. 10% of all Studio revenue is automatically tithed to the Ministry's community trust, ensuring that our media expansion directly funds physical outreach and spiritual healing.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 border border-slate-100 rounded-lg bg-slate-50">
+                                <h4 class="font-bold text-slate-800 mb-1">Digital Tithe (Mercury)</h4>
+                                <p class="text-xs text-slate-500 mb-3">Global Media & Broadcasting Support</p>
+                                <button class="text-xs font-bold text-indigo-600 hover:underline">Connect Mercury Account <i class="fas fa-external-link-alt ml-1"></i></button>
+                            </div>
+                            <div class="p-4 border border-amber-100 rounded-lg bg-amber-50">
+                                <h4 class="font-bold text-amber-800 mb-1">Legacy Tithe (Chase)</h4>
+                                <p class="text-xs text-amber-600 mb-3">Local Appalachian Outreach Trust</p>
+                                <button class="text-xs font-bold text-amber-700 hover:underline">Access Chase Private Client <i class="fas fa-external-link-alt ml-1"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-indigo-900 text-white p-6 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-bold mb-4">Impact Metrics</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="text-2xl font-bold">1.2M+</div>
+                                <div class="text-[10px] uppercase tracking-widest opacity-70">Global Listeners Reached</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">500+</div>
+                                <div class="text-[10px] uppercase tracking-widest opacity-70">Appalachian Families Supported</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">20+</div>
+                                <div class="text-[10px] uppercase tracking-widest opacity-70">Acres Secured (Sanctuary)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Studio View -->
+    <div id="view-studio" class="view-section starchive-view">
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.hash = ''" class="text-gray-400 hover:text-indigo-600 mr-2">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="bg-slate-800 text-white p-2 rounded-md">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">The Studio <span class="text-slate-800 font-normal text-sm ml-2">Titanium Ascendant</span></h1>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-2xl font-bold mb-6">Broadcast Operations & Asset Management</h2>
+                <p class="text-gray-600 mb-8">FCC-Registered Broadcasting (FRN: 0038034708). Commanding the global attention economy.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
+                        <h3 class="font-bold text-slate-800 mb-2">Equipment Manifest</h3>
+                        <p class="text-xs text-slate-500 mb-4">Pillar 2: High-Value Assets</p>
+                        <div class="text-2xl font-bold text-slate-900">42 Units</div>
+                        <div class="text-xs text-slate-400 mt-1 mb-4">UCC-1 Liens Active</div>
+                        <a href="/studio-intake.html" class="mt-auto block w-full py-2 bg-slate-800 text-white rounded hover:bg-slate-900 transition text-center no-underline text-sm">Log New Asset</a>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-lg border border-slate-100">
+                        <h3 class="font-bold text-slate-800 mb-2">Broadcast Status</h3>
+                        <p class="text-xs text-slate-500 mb-4">FCC FRN: 0038034708</p>
+                        <div class="text-2xl font-bold text-emerald-600">LIVE</div>
+                        <div class="text-xs text-slate-400 mt-1">Primary Node Active</div>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-lg border border-slate-100">
+                        <h3 class="font-bold text-slate-800 mb-2">Network Reach</h3>
+                        <p class="text-xs text-slate-500 mb-4">Global Distribution</p>
+                        <div class="text-2xl font-bold text-indigo-600">1.2M+</div>
+                        <div class="text-xs text-slate-400 mt-1">Active Listeners</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script type="importmap">
       {
         "imports": {
           "@google/genai": "https://esm.sh/@google/genai@^0.8.0",
-          "marked": "https://esm.sh/marked@^15.0.8"
+          "marked": "https://esm.sh/marked@^15.0.8",
+          "jspdf": "https://esm.sh/jspdf@^2.5.1",
+          "docx": "https://esm.sh/docx@^8.5.0",
+          "file-saver": "https://esm.sh/file-saver@^2.0.5"
         }
       }
     </script>
